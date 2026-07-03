@@ -7,7 +7,7 @@ Receives RST: Port is CLOSED
 Timeout (no response): Port is FILTERED (firewall blocking)
 
   # All ports
-  python scanner.py 192.168.1.1 -p-
+  python scanner.py 192.168.1.1 -a
 
   # Specific range
   python scanner.py 192.168.1.1 -p 1-1024
