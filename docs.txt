@@ -1,54 +1,67 @@
-# Default: top 1000 TCP ports
-python scanner.py 192.168.1.1
+                        TCP 3 way handshake
+Client                    Server
+------                    ------
+SYN -------------------->
+                    <----- SYN+ACK
+ACK -------------------->   Connection established
 
-Sends: TCP SYN packet to port
-Receives SYN-ACK: Port is OPEN → Complete handshake (send ACK) → Close connection
-Receives RST: Port is CLOSED
-Timeout (no response): Port is FILTERED (firewall blocking)
+...optionally exchange data...
 
-  # All ports
-  python scanner.py 192.168.1.1 -a
+FIN/RST ---------------->   Close connection
 
-  # Specific range
-  python scanner.py 192.168.1.1 -p 1-1024
+                        TCP 2 way SYN handshake (less likely to log sender's IP)
+Receive SYN+ACK  -> OPEN
+Receive RST+ACK  -> CLOSED
+Receive ICMP     -> FILTERED
+Receive nothing  -> FILTERED
 
-  # Verbose output
-  python scanner.py 192.168.1.1 -v
+OPEN
+Client                    Server
+------                    ------
+SYN -------------------->
+                    <----- SYN+ACK
+RST -------------------->   Abort connection
 
-  # Only open ports
-  python scanner.py 192.168.1.1 --open
+CLOSED
+Client                    Server
+------                    ------
+SYN -------------------->
+                    <----- RST+ACK
 
-Sends: TCP SYN packet to port
-Receives SYN-ACK: Port is OPEN → Send RST (don't complete handshake)
-Receives RST: Port is CLOSED
-Timeout (no response): Port is FILTERED
+FILTERED
+Client                  Firewall              |    Server
+------                  --------              |    ------
+SYN ------------------->                      |
+      <---------------- ICMP Destination Unreachable or no reply
 
-  # SYN scan (requires sudo) 
-  sudo python scanner.py 192.168.1.1 -sS
+                          UDP packet sending
+OPEN
+Client                    Server
+------                    ------
+UDP --------------------->
+                    <----- UDP response
 
-Sends: UDP packet to port
-Receives UDP response: Port is OPEN
-Receives ICMP unreachable: Port is CLOSED or FILTERED
-Timeout (no response): Port is FILTERED
+CLOSED
+Client                    Server
+------                    ------
+UDP --------------------->
+                    <----- ICMP Port Unreachable
 
-  # UDP scan
-  sudo python scanner.py 192.168.1.1 -sU
+FILTERED|OPEN (can't determine)
+Client                  Firewall              |    Server
+------                  --------              |    ------
+UDP --------------------->
+          (no reply)
 
-Sends: TCP ACK packet to port (pretends connection exists)
-Receives RST: Port is UNFILTERED (firewall not blocking)
-Timeout (no response): Port is FILTERED (firewall blocking)
+                          ACK packet sending (to determine if a firewall blocks the packet)
+UNFILTERED
+Client                    Server
+------                    ------
+ACK --------------------->
+                    <----- RST
 
-  # ACK scan
-  sudo python scanner.py 192.168.1.1 -sA
-
-After port scan: Try to grab service banner (sends service running on port and its version)
-Sends: Generic probe packets or known service queries
-Receives: Service name/version string (e.g., "Apache/2.4.41", "OpenSSH_7.4")
-Purpose: Detect running service versions on open ports
-
-  # Aggressive with version detection
-  python scanner.py 192.168.1.1 -A
-
-# Help
-python scanner.py -h
-python scanner.py --help
+FILTERED
+Client                    Firewall
+------                    --------
+ACK --------------------->
+         (no reply) or  <----ICMP Unreachable
