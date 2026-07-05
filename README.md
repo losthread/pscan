@@ -35,6 +35,7 @@ source venv/bin/activate      # Linux/macOS
 Install the dependencies:
 ```bash
 pip install -r requirements.txt
+pip install -e .
 ```
 
 > **Note:** SYN and ACK scans require root/administrator privileges because they use raw packets.
@@ -61,7 +62,7 @@ Scan all ports:
 pscan <target> -a
 ```
 
-Verbose output:
+Verbose output: (shows all ports regardless of being open or closed or filtered)
 ```bash
 pscan <target> -v
 ```
@@ -71,22 +72,22 @@ Fast mode (top 100 ports):
 pscan <target> -F
 ```
 
-TCP SYN scan:
+TCP SYN scan: (target device's firewall is less likely to log your IP)
 ```bash
 sudo pscan <target> -sS
 ```
 
-UDP scan:
+UDP scan: (sends UDP packets)
 ```bash
 pscan <target> -sU
 ```
 
-TCP ACK scan:
+TCP ACK scan: (detects firewall by sending tcp ack)
 ```bash
 sudo pscan <target> -sA
 ```
 
-Banner grabbing:
+Banner grabbing: (tells about the service running on that port if any)
 ```bash
 pscan <target> -A
 ```
