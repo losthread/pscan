@@ -1,4 +1,4 @@
-# pmap
+# pscan
 A minimal port scanner inspired by **nmap**, written in Python.
 
 ## Features
