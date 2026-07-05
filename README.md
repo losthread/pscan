@@ -21,8 +21,8 @@ A minimal port scanner inspired by **nmap**, written in Python.
 ## Installation
 Clone the repository:
 ```bash
-git clone https://github.com/losthread/scan.git
-cd scan
+git clone https://github.com/losthread/pscan.git
+cd pscan
 ```
 
 Create a virtual environment (recommended):
